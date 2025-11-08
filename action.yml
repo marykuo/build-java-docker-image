@@ -1,0 +1,77 @@
+name: Build and Push Java Docker Image
+description: Builds a Java application using Maven and pushes the Docker image to a specified Docker registry.
+
+inputs:
+  java-version:
+    description: "Java version"
+    required: true
+  maven-version:
+    description: "Maven version"
+    required: true
+    default: "3.9.6"
+  docker-registry:
+    description: "Docker registry URL"
+    required: true
+    default: "gw-nexus-docker.tweinv.com"
+  docker-username:
+    description: "Docker registry username"
+    required: true
+  docker-password:
+    description: "Docker registry password"
+    required: true
+  image-name:
+    description: "Docker image name"
+    required: true
+  dockerfile-path:
+    description: "Path to Dockerfile"
+    required: true
+    default: "./Dockerfile"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Print inputs
+      shell: bash
+      run: |
+        echo "Java Version: ${{ inputs.java-version }}"
+        echo "Maven Version: ${{ inputs.maven-version }}"
+        echo "Docker Registry: ${{ inputs.docker-registry }}"
+        echo "Docker Image Name: ${{ inputs.image-name }}"
+        echo "Dockerfile Path: ${{ inputs.dockerfile-path }}"
+
+    - name: Setup Maven Action
+      uses: s4u/setup-maven-action@v1.11.0
+      with:
+        java-version: ${{ inputs.java-version }}
+        maven-version: ${{ inputs.maven-version }}
+        cache: maven
+
+    - name: Setup Java Version
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: "temurin"
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test with Maven
+      shell: bash
+      run: mvn clean test
+
+    - name: Build with Maven
+      shell: bash
+      run: mvn clean package -DskipTests
+
+    - name: Docker Auth
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.docker-registry }}
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Build And Push Docker image to Artifact Registry
+      shell: bash
+      run: |
+        docker build -t ${{ inputs.image-name }} -f ${{ inputs.dockerfile-path }} .
+        docker push ${{ inputs.image-name }}
