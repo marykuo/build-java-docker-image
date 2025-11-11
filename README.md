@@ -22,7 +22,7 @@ steps:
 
 ### Private Docker Registry
 
-````yaml
+```yaml
 steps:
   - name: Build Java application and Push Docker Image
     uses: marykuo/build-java-docker-image@v1
@@ -52,11 +52,10 @@ steps:
       dockerfile-path: ./Dockerfile
 ````
 
-## 執行流程
+## 腳本流程說明
 
-1. 使用指定版本的 Java 環境。
-2. 使用指定版本的 Maven 環境。
-3. 使用 `actions/checkout@v4` 來取得 git 相關資訊。
-4. 使用 `mvn clean test` 進行測試。
-5. 使用 `mvn clean package -DskipTests` Build Java application。
-6. 使用指定的 Dockerfile 建立 Docker Image，並 push 到指定的 Docker Registry。
+1. 使用指定版本的 Java 和 Maven 版本 setup 環境。
+1. 使用 `actions/checkout@v4` 來取得 git 相關資訊。
+1. 使用 `mvn clean test` 進行測試。
+1. 使用 `mvn clean package -DskipTests` Build Java application。
+1. 使用指定的 Dockerfile 建立 Docker Image，並 push 到指定的 Docker Registry。
