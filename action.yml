@@ -46,12 +46,6 @@ runs:
         maven-version: ${{ inputs.maven-version }}
         cache: maven
 
-    - name: Setup Java Version
-      uses: actions/setup-java@v3
-      with:
-        java-version: ${{ inputs.java-version }}
-        distribution: "temurin"
-
     - name: Checkout code
       uses: actions/checkout@v4
 
