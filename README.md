@@ -9,14 +9,16 @@ Building a Docker image for a Java application using Maven
 ```yaml
 steps:
   - name: Build Java application and Push Docker Image
-    uses: marykuo/build-java-docker-image@v1
+    uses: marykuo/build-java-docker-image@v2
     with:
       java-version: 17
       maven-version: 3.9.6
       docker-registry: docker.io
       docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker-password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      image-name: docker.io/your-username/your-repo-name:tag
+      image-name: docker.io/your-username/your-repo-name
+      image-tag: tag
+      publish-latest: false
       dockerfile-path: ./Dockerfile
 ```
 
@@ -32,7 +34,9 @@ steps:
       docker-registry: my-nexus.example.com
       docker-username: ${{ secrets.NEXUS_USERNAME }}
       docker-password: ${{ secrets.NEXUS_PASSWORD }}
-      image-name: my-nexus.example.com/your-repo-name/your-image-name:tag
+      image-name: my-nexus.example.com/your-repo-name/your-image-name
+      image-tag: tag
+      publish-latest: false
       dockerfile-path: ./Dockerfile
 ```
 
@@ -48,9 +52,11 @@ steps:
       docker-registry: <location>-docker.pkg.dev
       docker-username: _json_key
       docker-password: ${{ secrets.GAR_JSON_KEY }}
-      image-name: <location>-docker.pkg.dev/your-project-id/your-repo-name/your-image-name:<tag>
+      image-name: <location>-docker.pkg.dev/your-project-id/your-repo-name/your-image-name
+      image-tag: tag
+      publish-latest: true
       dockerfile-path: ./Dockerfile
-````
+```
 
 ## 腳本流程說明
 

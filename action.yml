@@ -22,6 +22,13 @@ inputs:
   image-name:
     description: "Docker image name"
     required: true
+  image-tag:
+    description: "Docker image tag"
+    required: true
+  publish-latest:
+    description: "Whether to also publish the 'latest' tag"
+    required: false
+    default: "false"
   dockerfile-path:
     description: "Path to Dockerfile"
     required: true
@@ -37,6 +44,8 @@ runs:
         echo "Maven Version: ${{ inputs.maven-version }}"
         echo "Docker Registry: ${{ inputs.docker-registry }}"
         echo "Docker Image Name: ${{ inputs.image-name }}"
+        echo "Docker Image Tag: ${{ inputs.image-tag }}"
+        echo "Publish Latest: ${{ inputs.publish-latest }}"
         echo "Dockerfile Path: ${{ inputs.dockerfile-path }}"
 
     - name: Setup Maven Action
@@ -67,5 +76,12 @@ runs:
     - name: Build And Push Docker image to Artifact Registry
       shell: bash
       run: |
-        docker build -t ${{ inputs.image-name }} -f ${{ inputs.dockerfile-path }} .
-        docker push ${{ inputs.image-name }}
+        docker build -t ${{ inputs.image-name }}:${{ inputs.image-tag }} -f ${{ inputs.dockerfile-path }} .
+        docker push ${{ inputs.image-name }}:${{ inputs.image-tag }}
+
+    - name: Push latest tag
+      if: ${{ inputs.publish-latest == 'true' }}
+      shell: bash
+      run: |
+        docker tag ${{ inputs.image-name }}:${{ inputs.image-tag }} ${{ inputs.image-name }}:latest
+        docker push ${{ inputs.image-name }}:latest
